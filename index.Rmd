@@ -1,0 +1,72 @@
+---
+title: "Confidence Intervals and p values"
+author: "Richard D. Morey"
+date: "07/10/2016"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Confidence interval for a normal mean (known variance)
+
+Suppose that you are interested in estimating the mean $\mu$ of a normal population. You happen to know that the population standard deviation is $\sigma=15$. You sample $N$ people from the population and you want to compute confidence interval. 
+
+The sampling distribution of the mean $\bar{X}$ is
+\[
+\bar{X} \sim \mbox{Normal}(\mu, \sigma/N).
+\]
+
+Let's consider first the one-sided hypothesis that $\mu>\mu_0$. The $p$ value to test this hypothesis is
+\[
+p_1 = P_{\mu_0}(Y<\bar{X})
+\]
+where $Y$ is a hypothetical draw from the sampling distribution of the mean assuming that the true value is $\mu=\mu_0$, and $\bar{X}$ is the observed mean. When $p_1$ is small, that means that $\bar{X}$ is small. If $p_1$ is 0.01, for instance, this means that $\bar{X}$ is so small we would expect a smaller $\bar{X}$ no more than 1% of the time, if $\mu>\mu_0$.
+
+Now consider the one-sided hypothesis that $\mu<\mu_0$. The $p$ value to test this hypothesis is
+\[
+p_2 = P_{\mu_0}(Y>\bar{X})
+\]
+where $Y$ is a hypothetical draw from the sampling distribution of the mean assuming that the true value is $\mu=\mu_0$, and $\bar{X}$ is the observed mean. When $p_2$ is small, that means that $\bar{X}$ is large. If $p_2$ is 0.01, for instance, this means that $\bar{X}$ is so large we would expect a larger $\bar{X}$ no more than 1% of the time, if $\mu<\mu_0$.
+
+
+```{r shiny_t, echo=FALSE}
+shinyAppDir(
+  "shiny/ci_t", 
+  options = list(
+    width = "100%", height = 550
+  )
+)
+```
+
+Suppose we observe the mean $\bar{X}$ and collect all null hypotheses $\mu_0$ that would *not* be rejected by one of the two possible one-sided tests at significance level $\alpha/2$. We use $\alpha/2$ because we want a two-sided interval. The values of $\mu$ that would not be rejected are a $100(1-\alpha)$% CI for $\mu$.
+
+Try playing with the shiny applet above. Seeing how it works should make the relationship between the test and the confidence interval more apparent. Adjust the true mean $\mu$ and see which hypothetical values are rejected, assuming the observed data.
+
+
+
+## Confidence interval for $\omega^2$ (ANOVA)
+
+The effect size measure $\omega^2$ is a measure of the total variance "accounted for" by a independent variance in ANOVA designs (see [Steiger, 2004](http://ww.w.statpower.net/Steiger%20Biblio/Steiger04.pdf)). For our purposes, the important thing to understand is the relationship between the (true) $\omega^2$ and the $F$ statistics we expect: larger $\omega^2$, larger $F$ statistics. Try manipulating $\omega^2$ in the applet below to see the relationship.
+
+
+```{r shiny_om2, echo=FALSE}
+shinyAppDir(
+  "shiny/ci_omega2",
+  options = list(
+    width = "100%", height = 550
+  )
+)
+```
+
+If we wish to build a confidence interval for $\omega^2$, we take the same strategy as we did with $\mu$ in the normal population case: we define two one-sided tests, and we accept into our $100(1-\alpha)$% confidence interval any null hypotheses that would not be rejected by one of the one-sided tests at $\alpha/2$. 
+
+The interesting thing about the CI for $\omega^2$ is that it can be empty when $F$ is small. Try setting $F=0.1$ in the applet, and the confidence coefficient to 50%. In this case, $F$ is so small that *all values of $\omega^2$* are rejected by one of the tests at $\alpha=.25$. Therefore, the confidence interval is empty. 
+
+This shows that a narrow confidence interval does not necessarily indicate precision, as is often claimed. In this case, the confidence interval is infinitisimally narrow because the model does not fit.If we believed we had a precise estimate of $\omega^2$, we would be mistaken. What we appear to have is the opposite of precision: we have a reason to mistrust the results altogether.
+
+
